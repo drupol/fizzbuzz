@@ -8,19 +8,27 @@ function divisible(int $a): Closure {
     };
 }
 
-for ($i = 1; $i <= 100; $i++) {
-    $divisible = divisible($i);
+$input = range(1, 100);
 
-    if ($divisible(15)) {
-        echo "FizzBuzz\n";
-    }
-    else if ($divisible(3)) {
-        echo "Fizz\n";
-    }
-    else if ($divisible(5)) {
-        echo "Buzz\n";
-    }
-    else {
-        echo "$i\n";
-    }
-}
+$output = array_map(
+    function (int $i): string {
+        $divisible = divisible($i);
+
+        if ($divisible(15)) {
+            return 'FizzBuzz';
+        }
+
+        if ($divisible(3)) {
+            return 'Fizz';
+        }
+
+        if ($divisible(5)) {
+            return 'Buzz';
+        }
+
+        return (string) $i;
+    },
+    $input
+);
+
+print implode(PHP_EOL, $output);
