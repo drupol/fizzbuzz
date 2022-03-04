@@ -2,18 +2,22 @@
 
 declare(strict_types=1);
 
-function divisible(int $a, int $b): bool {
-    return 0 === $a % $b;
+function divisible(int $a): Closure {
+    return function (int $b) use ($a): bool {
+        return 0 === $a % $b;
+    };
 }
 
 for ($i = 1; $i <= 100; $i++) {
-    if (divisible($i,15)) {
+    $divisible = divisible($i);
+
+    if ($divisible(15)) {
         echo "FizzBuzz\n";
     }
-    else if (divisible($i, 3)) {
+    else if ($divisible(3)) {
         echo "Fizz\n";
     }
-    else if (divisible($i, 5)) {
+    else if ($divisible(5)) {
         echo "Buzz\n";
     }
     else {
