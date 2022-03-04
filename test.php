@@ -9,24 +9,30 @@ function divisible(int $a): Closure {
 }
 
 $input = range(1, 100);
+$rules = [
+    [
+        'when' => 3,
+        'then' => 'Fizz',
+    ],
+    [
+        'when' => 5,
+        'then' => 'Buzz',
+    ]
+];
 
 $output = array_map(
-    function (int $i): string {
+    function (int $i) use ($rules): string {
         $divisible = divisible($i);
 
-        if ($divisible(15)) {
-            return 'FizzBuzz';
-        }
+        $reduced = array_reduce(
+            $rules,
+            function (string $acc, array $rule) use ($divisible): string {
+                return $acc . ($divisible($rule['when']) ? $rule['then'] : '');
+            },
+            ''
+        );
 
-        if ($divisible(3)) {
-            return 'Fizz';
-        }
-
-        if ($divisible(5)) {
-            return 'Buzz';
-        }
-
-        return (string) $i;
+        return ('' === $reduced ? (string) $i : $reduced);
     },
     $input
 );
