@@ -2,30 +2,38 @@
 
 declare(strict_types=1);
 
-$divisible = fn (int $a) => fn (int $b): bool => 0 === $b % $a;
-
 $input = range(1, 100);
+$divisible = fn (int $a) => fn (int $b) => fn (string $acc): bool => 0 === ($b % $a);
+$accIsEmpty = fn (int $i) => fn (string $acc): bool => $acc === '';
+$addSuffix = fn (string $suffix) => fn (int $i) => fn (string $acc): string => sprintf('%s%s', $acc, $suffix);
+$justReturnTheNumber = fn (int $i) => fn (string $acc): string => sprintf('%s', $i);
 
 $rules = [
     [
-        'when' => $divisible(3),
-        'then' => 'Fizz',
+        'if' => $divisible(3),
+        'then' => $addSuffix('Fizz'),
+        'else' => $addSuffix(''),
     ],
     [
-        'when' => $divisible(5),
-        'then' => 'Buzz',
+        'if' => $divisible(5),
+        'then' => $addSuffix('Buzz'),
+        'else' => $addSuffix(''),
+    ],
+    [
+        'if' => $accIsEmpty,
+        'then' => $justReturnTheNumber,
+        'else' => $addSuffix(''),
     ]
 ];
 
 $output = array_map(
-    function (int $i) use ($rules): string {
-        $reduced = array_reduce(
+    fn (int $i): string =>
+        array_reduce(
             $rules,
-            fn (?string $acc, array $rule): string => $acc . (($rule['when'])($i) ? $rule['then'] : null)
-        );
-
-        return ('' === $reduced ? (string) $i : $reduced);
-    },
+            fn (string $acc, array $rule): string => (($rule['if'])($i)($acc) ? ($rule['then'])($i)($acc) : ($rule['else'])($i)($acc)),
+            ''
+        )
+    ,
     $input
 );
 
